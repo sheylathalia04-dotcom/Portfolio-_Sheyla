@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Copy, Check, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Copy, Check } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
 export const Contact: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
   
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    asunto: '',
-    mensaje: '',
-  });
-
   const handleCopy = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);
     if (type === 'email') {
@@ -22,15 +15,6 @@ export const Contact: React.FC = () => {
       setCopiedPhone(true);
       setTimeout(() => setCopiedPhone(false), 2000);
     }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const subject = formData.asunto.trim() || `Contacto desde el portfolio: ${formData.nombre}`;
-    const body = `Nombre: ${formData.nombre}\nCorreo: ${formData.email}\n\n${formData.mensaje}`;
-    window.location.href =
-      `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -47,13 +31,11 @@ export const Contact: React.FC = () => {
             ¿Hablamos? Ponte en contacto conmigo
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-            Disponible para entrevistas laborales, proyectos de redes y soporte en sistemas o consultoría en IA.
+            Puedes contactarme por Gmail o por teléfono/WhatsApp.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Left Column: Direct contact info */}
-          <div className="lg:col-span-5 space-y-6">
+        <div className="max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Email Card */}
             <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
               <div className="flex items-center justify-between mb-3">
@@ -139,7 +121,7 @@ export const Contact: React.FC = () => {
             </div>
 
             {/* Location Card */}
-            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="md:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                   <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -157,90 +139,6 @@ export const Contact: React.FC = () => {
                 Disponibilidad para desplazamientos en Fuensalida, Toledo capital y municipios cercanos.
               </p>
             </div>
-          </div>
-
-          {/* Right Column: Contact Form */}
-          <div className="lg:col-span-7">
-            <div className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                Envíame un mensaje directo
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Se abrirá tu aplicación de correo con el mensaje preparado; solo tendrás que pulsar Enviar.
-              </p>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Tu Nombre *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.nombre}
-                        onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                        placeholder="Ej: Laura Gómez"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-2 focus:outline-blue-600"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Tu Email de Contacto *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="ejemplo@empresa.com"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-2 focus:outline-blue-600"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Asunto o Motivo de Consulta
-                    </label>
-                    <input
-                      type="text"
-                      name="_subject"
-                      value={formData.asunto}
-                      onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
-                      placeholder="Ej: Oportunidad laboral / Administrador de Sistemas"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-2 focus:outline-blue-600"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Mensaje *
-                    </label>
-                    <textarea
-                      required
-                      name="message"
-                      rows={4}
-                      value={formData.mensaje}
-                      onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
-                      placeholder="Escribe aquí tu propuesta o mensaje..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-2 focus:outline-blue-600"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>Abrir correo para enviar</span>
-                  </button>
-              </form>
-            </div>
-          </div>
         </div>
       </div>
     </div>

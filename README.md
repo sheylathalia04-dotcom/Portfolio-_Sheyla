@@ -29,6 +29,6 @@ Las imágenes públicas se sirven desde `public/` y sus rutas empiezan por `/ass
 
 El chatbot responde localmente a partir de la información incluida en el portfolio. No necesita una clave de Gemini, funciones de servidor ni variables de entorno, y sigue disponible en la versión publicada.
 
-## Formulario de contacto
+## Contacto
 
-El formulario prepara un correo dirigido a `sheylathalia04@gmail.com` en la aplicación de correo del visitante. El visitante revisa el mensaje y pulsa Enviar desde esa aplicación.
+Se puede contactar con Sheyla por correo en `sheylathalia04@gmail.com` o por teléfono/WhatsApp. La página de contacto ofrece enlaces directos para ambos canales.
