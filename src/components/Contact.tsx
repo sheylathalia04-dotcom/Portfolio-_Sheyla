@@ -12,7 +12,6 @@ export const Contact: React.FC = () => {
     asunto: '',
     mensaje: '',
   });
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending'>('idle');
 
   const handleCopy = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);
@@ -23,10 +22,6 @@ export const Contact: React.FC = () => {
       setCopiedPhone(true);
       setTimeout(() => setCopiedPhone(false), 2000);
     }
-  };
-
-  const handleSubmit = () => {
-    setSubmitStatus('sending');
   };
 
   return (
@@ -168,7 +163,6 @@ export const Contact: React.FC = () => {
               <form
                 action={`https://formsubmit.co/${PERSONAL_INFO.email}`}
                 method="POST"
-                onSubmit={handleSubmit}
                 className="space-y-4"
               >
                   <input type="hidden" name="_replyto" value={formData.email} />
@@ -235,11 +229,10 @@ export const Contact: React.FC = () => {
 
                   <button
                     type="submit"
-                    disabled={submitStatus === 'sending'}
                     className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{submitStatus === 'sending' ? 'Enviando mensaje...' : 'Enviar Mensaje a Sheyla'}</span>
+                    <span>Enviar Mensaje a Sheyla</span>
                   </button>
               </form>
             </div>
