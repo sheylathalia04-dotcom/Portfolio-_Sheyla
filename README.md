@@ -31,4 +31,4 @@ El chatbot responde localmente a partir de la información incluida en el portfo
 
 ## Formulario de contacto
 
-El formulario envía los mensajes a una función de Vercel que los entrega a través de FormSubmit (`formsubmit.co`). La primera vez, FormSubmit envía un mensaje de confirmación a `sheylathalia04@gmail.com`; hay que confirmar la dirección para activar la recepción.
+El formulario envía los mensajes directamente a FormSubmit (`formsubmit.co`) mediante un envío HTML estándar, con la protección antispam del servicio activa. La primera vez, FormSubmit envía un mensaje de confirmación a `sheylathalia04@gmail.com`; hay que confirmar la dirección para activar la recepción.
