@@ -35,20 +35,14 @@ export const Contact: React.FC = () => {
     setSubmitError(null);
 
     try {
+      const payload = new FormData(e.currentTarget);
+      payload.set('_subject', formData.asunto || `Contacto desde el portfolio: ${formData.nombre}`);
+      payload.set('_captcha', 'false');
+
       const response = await fetch(`https://formsubmit.co/ajax/${PERSONAL_INFO.email}`, {
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.nombre,
-          email: formData.email,
-          _subject: formData.asunto || `Contacto desde el portfolio: ${formData.nombre}`,
-          _captcha: 'false',
-          _honey: new FormData(e.currentTarget).get('_honey') || '',
-          message: formData.mensaje,
-        }),
+        headers: { Accept: 'application/json' },
+        body: payload,
       });
 
       const result: unknown = await response.json();
@@ -251,7 +245,7 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="text"
-                        name="nombre"
+                        name="name"
                         required
                         value={formData.nombre}
                         onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
@@ -282,7 +276,7 @@ export const Contact: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      name="asunto"
+                      name="_subject"
                       value={formData.asunto}
                       onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
                       placeholder="Ej: Oportunidad laboral / Administrador de Sistemas"
@@ -296,7 +290,7 @@ export const Contact: React.FC = () => {
                     </label>
                     <textarea
                       required
-                      name="mensaje"
+                      name="message"
                       rows={4}
                       value={formData.mensaje}
                       onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
@@ -304,13 +298,6 @@ export const Contact: React.FC = () => {
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-2 focus:outline-blue-600"
                     />
                   </div>
-
-                  <label className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
-                    <input type="checkbox" required className="mt-0.5 accent-blue-600" />
-                    <span>
-                      Acepto que mis datos se envíen a FormSubmit para entregarle este mensaje a Sheyla. El portfolio no guarda los datos en una base de datos.
-                    </span>
-                  </label>
 
                   {submitStatus === 'error' && submitError && (
                     <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">

@@ -31,4 +31,4 @@ El chatbot responde localmente a partir de la información incluida en el portfo
 
 ## Formulario de contacto
 
-El formulario envía el mensaje directamente a través de FormSubmit (`formsubmit.co`), sin base de datos propia, servidor ni cuenta para el visitante. La primera vez, FormSubmit enviará un mensaje de confirmación a `sheylathalia04@gmail.com`; hay que abrirlo y confirmar la dirección para activar la recepción. El formulario informa al visitante de que sus datos se tramitan por ese servicio. También se puede usar el enlace `mailto:` como alternativa.
+El formulario envía los mensajes a través de FormSubmit (`formsubmit.co`) usando su endpoint AJAX. La primera vez, FormSubmit envía un mensaje de confirmación a `sheylathalia04@gmail.com`; hay que confirmar la dirección para activar la recepción. Si el envío falla, el formulario muestra un enlace para escribir directamente por correo.
