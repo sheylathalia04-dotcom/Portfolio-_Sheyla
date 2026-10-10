@@ -13,9 +13,6 @@ export const Contact: React.FC = () => {
     mensaje: '',
   });
 
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
   const handleCopy = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);
     if (type === 'email') {
@@ -24,51 +21,6 @@ export const Contact: React.FC = () => {
     } else {
       setCopiedPhone(true);
       setTimeout(() => setCopiedPhone(false), 2000);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (submitStatus === 'sending') return;
-
-    setSubmitStatus('sending');
-    setSubmitError(null);
-
-    try {
-      const payload = new FormData(e.currentTarget);
-      payload.set('_subject', formData.asunto || `Contacto desde el portfolio: ${formData.nombre}`);
-      payload.set('_captcha', 'false');
-
-      const response = await fetch(`https://formsubmit.co/ajax/${PERSONAL_INFO.email}`, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: payload,
-      });
-
-      const result: unknown = await response.json();
-      const resultMessage =
-        typeof result === 'object' && result !== null && 'message' in result && typeof result.message === 'string'
-          ? result.message
-          : null;
-      const succeeded =
-        typeof result === 'object' &&
-        result !== null &&
-        'success' in result &&
-        (result.success === true || result.success === 'true');
-
-      if (!response.ok || !succeeded) {
-        throw new Error(resultMessage || 'El servicio de correo no pudo aceptar el mensaje.');
-      }
-
-      setSubmitStatus('success');
-      setFormData({ nombre: '', email: '', asunto: '', mensaje: '' });
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'No se pudo enviar el mensaje. Inténtalo de nuevo o escríbeme directamente.';
-      setSubmitStatus('error');
-      setSubmitError(message);
     }
   };
 
@@ -208,32 +160,8 @@ export const Contact: React.FC = () => {
                 Envíame un mensaje desde aquí, sin abrir tu aplicación de correo y sin crear una cuenta.
               </p>
 
-              {submitStatus === 'success' ? (
-                <div className="p-6 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center mx-auto">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    ¡Mensaje enviado correctamente!
-                  </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-                    Gracias por ponerte en contacto conmigo. También puedes escribirme a{' '}
-                    <a className="font-semibold text-blue-600 dark:text-blue-400" href={`mailto:${PERSONAL_INFO.email}`}>
-                      {PERSONAL_INFO.email}
-                    </a>.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSubmitStatus('idle');
-                      setFormData({ nombre: '', email: '', asunto: '', mensaje: '' });
-                    }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Enviar otro mensaje
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form action={`https://formsubmit.co/${PERSONAL_INFO.email}`} method="POST" className="space-y-4">
+                  <input type="hidden" name="_captcha" value="false" />
                   <div className="hidden" aria-hidden="true">
                     <label htmlFor="contact-website">Deja este campo vacío</label>
                     <input id="contact-website" name="_honey" tabIndex={-1} autoComplete="off" />
@@ -299,25 +227,14 @@ export const Contact: React.FC = () => {
                     />
                   </div>
 
-                  {submitStatus === 'error' && submitError && (
-                    <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">
-                      No se pudo enviar el mensaje: {submitError} También puedes escribir a{' '}
-                      <a className="font-semibold underline" href={`mailto:${PERSONAL_INFO.email}`}>
-                        {PERSONAL_INFO.email}
-                      </a>.
-                    </p>
-                  )}
-
                   <button
                     type="submit"
-                    disabled={submitStatus === 'sending'}
                     className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{submitStatus === 'sending' ? 'Enviando mensaje...' : 'Enviar Mensaje a Sheyla'}</span>
+                    <span>Enviar Mensaje a Sheyla</span>
                   </button>
                 </form>
-              )}
             </div>
           </div>
         </div>
