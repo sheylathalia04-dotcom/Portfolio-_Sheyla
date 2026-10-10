@@ -24,13 +24,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  const payload = new URLSearchParams({
+  const payload = {
     name: nombre,
     email,
     _subject: asunto.trim() || `Contacto desde el portfolio: ${nombre}`,
     _captcha: 'false',
     message: mensaje,
-  });
+  };
 
   let upstream;
   try {
@@ -38,9 +38,9 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: payload,
+      body: JSON.stringify(payload),
     });
   } catch (error) {
     console.error('No se pudo conectar con el servicio de correo del formulario.', error);
