@@ -24,6 +24,15 @@ export const Contact: React.FC = () => {
     }
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const subject = formData.asunto.trim() || `Contacto desde el portfolio: ${formData.nombre}`;
+    const body = `Nombre: ${formData.nombre}\nCorreo: ${formData.email}\n\n${formData.mensaje}`;
+    window.location.href =
+      `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className="pt-28 pb-16 min-h-[calc(100vh-80px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -157,15 +166,10 @@ export const Contact: React.FC = () => {
                 Envíame un mensaje directo
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Envíame un mensaje directamente desde aquí.
+                Se abrirá tu aplicación de correo con el mensaje preparado; solo tendrás que pulsar Enviar.
               </p>
 
-              <form
-                action={`https://formsubmit.co/${PERSONAL_INFO.email}`}
-                method="POST"
-                className="space-y-4"
-              >
-                  <input type="hidden" name="_replyto" value={formData.email} />
+              <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -232,7 +236,7 @@ export const Contact: React.FC = () => {
                     className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Enviar Mensaje a Sheyla</span>
+                    <span>Abrir correo para enviar</span>
                   </button>
               </form>
             </div>
