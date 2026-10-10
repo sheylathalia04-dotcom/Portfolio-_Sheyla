@@ -1,19 +1,6 @@
-import { PERSONAL_INFO } from '../src/data/portfolioData';
+const isRecord = (value) => typeof value === 'object' && value !== null;
 
-interface ContactRequest {
-  method?: string;
-  body?: unknown;
-}
-
-interface ContactResponse {
-  status: (code: number) => ContactResponse;
-  json: (body: unknown) => void;
-}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
-
-export default async function handler(req: ContactRequest, res: ContactResponse): Promise<void> {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ message: 'Método no permitido.' });
     return;
@@ -45,9 +32,9 @@ export default async function handler(req: ContactRequest, res: ContactResponse)
     message: mensaje,
   });
 
-  let upstream: Response;
+  let upstream;
   try {
-    upstream = await fetch(`https://formsubmit.co/ajax/${PERSONAL_INFO.email}`, {
+    upstream = await fetch('https://formsubmit.co/ajax/sheylathalia04@gmail.com', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -55,24 +42,22 @@ export default async function handler(req: ContactRequest, res: ContactResponse)
       },
       body: payload,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('No se pudo conectar con el servicio de correo del formulario.', error);
     res.status(502).json({ message: 'No se pudo conectar con el servicio de correo. Inténtalo de nuevo.' });
     return;
   }
 
-  let result: unknown;
+  let result;
   try {
     result = await upstream.json();
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('El servicio de correo devolvió una respuesta no válida.', error);
     res.status(502).json({ message: 'El servicio de correo no pudo confirmar el envío. Inténtalo de nuevo.' });
     return;
   }
 
-  const succeeded =
-    isRecord(result) && (result.success === true || result.success === 'true');
-
+  const succeeded = isRecord(result) && (result.success === true || result.success === 'true');
   if (!upstream.ok || !succeeded) {
     res.status(502).json({ message: 'El servicio de correo no aceptó el mensaje. Inténtalo de nuevo.' });
     return;

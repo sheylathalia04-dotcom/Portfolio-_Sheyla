@@ -39,7 +39,13 @@ export const Contact: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const result: unknown = await response.json();
+      const responseText = await response.text();
+      let result: unknown;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        throw new Error('El servidor no pudo procesar el mensaje. Inténtalo de nuevo más tarde.');
+      }
       const message =
         typeof result === 'object' && result !== null && 'message' in result && typeof result.message === 'string'
           ? result.message
