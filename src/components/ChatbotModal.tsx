@@ -49,20 +49,28 @@ export const ChatbotModal: React.FC = () => {
   }, []);
 
   const generateAnswer = (query: string): string => {
-    const q = query.toLowerCase().trim();
+    const q = query
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
 
     // 1. Estudios / Educación / Historial Académico
     if (q.includes('estudio') || q.includes('formaci') || q.includes('educaci') || q.includes('grado') || q.includes('instituto') || q.includes('aldebar') || q.includes('bachiller') || q.includes('titulaci')) {
-      return `🎓 **Historial Académico y Formación de Sheyla** *(ordenado cronológicamente de antes a ahora)*:\n\n1. **Bachillerato de Ciencias de la Salud** (Septiembre 2021 - Junio 2023)\n   • Centro: *IES ALDEBARÁN*\n   • Base en ciencias, razonamiento analítico y resolución estructurada de problemas.\n\n2. **Grado Superior en Administración de Sistemas Informáticos y Redes (ASIR)** (Septiembre 2023 - Junio 2025)\n   • Centro: *IES ALDEBARÁN*\n   • Especialidad: Administración de servidores (Windows Server y Linux), redes corporativas, cableado, bases de datos SQL y seguridad.\n\n3. **Cursos de Especialización**:\n   • **Curso de Phishing** (Julio 2024) - *Udemy*\n   • **Curso de Fundamentos Básicos de Inteligencia Artificial** (Agosto - Septiembre 2026) - *Cámara de Comercio de Toledo*\n   • **Curso de Emprendimiento Inteligente con IA: Administración y Gestión** (Septiembre - Octubre 2026) - *Cámara de Comercio de Toledo*`;
+      const educationHistory = EDUCATION_LIST.map((item, index) =>
+        `${index + 1}. **${item.degree}** (${item.period})\n   • Centro: *${item.institution}*\n   • ${item.description}\n   • Materias y competencias: ${item.topics.join('; ')}`
+      ).join('\n\n');
+
+      return `🎓 **Historial Académico y Formación de Sheyla** *(ordenado cronológicamente de antes a ahora)*:\n\n${educationHistory}`;
     }
 
     // 2. Unitel Sistemas de Telecomunicaciones
-    if (q.includes('unitel') || q.includes('telecomunicac') || q.includes('práctica') || q.includes('impresora') || q.includes('taller')) {
+    if (q.includes('unitel') || q.includes('telecomunicac') || q.includes('practica') || q.includes('impresora') || q.includes('taller')) {
       return `🏢 **Experiencia en Unitel Sistemas de Telecomunicaciones** (Marzo - Junio 2025):\n\nSheyla completó sus prácticas de Formación Profesional en Unitel rotando por 4 áreas clave:\n\n• **Taller de Impresoras**: Diagnóstico técnico, mantenimiento preventivo/correctivo y cambio de piezas en equipos corporativos.\n• **Oficina de Proyectos**: Soporte en memorias técnicas, inventariado de material y documentación de proyectos.\n• **Oficina de Instalaciones**: Montaje de armarios rack, cableado de telecomunicaciones y conexionado de red.\n• **Oficina de Administración**: Tramitación de partes de avería, control de albaranes y archivo documental.`;
     }
 
     // 3. Inteligencia Artificial / IA
-    if (q.includes('inteligencia artificial') || /(^|[^\p{L}\p{N}])ia($|[^\p{L}\p{N}])/u.test(q) || q.includes('modelo') || q.includes('cámara de comercio')) {
+    if (q.includes('inteligencia artificial') || /(^|[^\p{L}\p{N}])ia($|[^\p{L}\p{N}])/u.test(q) || q.includes('modelo') || q.includes('camara de comercio')) {
       return `🤖 **Formación y Competencias en Inteligencia Artificial**:\n\nSheyla ha cursado formación especializada en la **Cámara de Comercio de Toledo**:\n\n1. **Curso de Fundamentos Básicos de Inteligencia Artificial** (Agosto - Septiembre 2026):\n   • Modelos de IA, aprendizaje automático y herramientas generativas modernas.\n\n2. **Curso de Emprendimiento Inteligente con IA: Administración y Gestión** (Septiembre - Octubre 2026):\n   • Aplicación práctica de la IA a la administración, gestión documental, optimización de productividad y automatización de tareas de oficina.`;
     }
 
@@ -82,17 +90,17 @@ export const ChatbotModal: React.FC = () => {
     }
 
     // 7. Contacto / Ubicación
-    if (q.includes('contact') || q.includes('teléfono') || q.includes('telefono') || q.includes('correo') || q.includes('email') || q.includes('dónde vive') || q.includes('donde vive') || q.includes('ubicaci') || q.includes('fuensalida') || q.includes('toledo')) {
+    if (q.includes('contact') || q.includes('telefono') || q.includes('correo') || q.includes('email') || q.includes('donde vive') || q.includes('ubicaci') || q.includes('fuensalida') || q.includes('toledo')) {
       return `📫 **Datos Oficiales de Contacto de Sheyla**:\n\n• **Nombre**: ${PERSONAL_INFO.fullName}\n• **Ubicación**: ${PERSONAL_INFO.location}\n• **Teléfono**: ${PERSONAL_INFO.phone}\n• **Email**: ${PERSONAL_INFO.email}\n\nPuedes llamarla o enviarle un correo para cualquier propuesta laboral o concertar una entrevista.`;
     }
 
     // 8. Quién es / Perfil
-    if (q.includes('quién es') || q.includes('quien es') || q.includes('sobre ella') || q.includes('presenta') || q.includes('perfil') || q.includes('resumen')) {
+    if (q.includes('quien es') || q.includes('sobre ella') || q.includes('presenta') || q.includes('perfil') || q.includes('resumen')) {
       return `👋 **Perfil Profesional de Sheyla Thalía Gutiérrez Larquín**:\n\nEspecialista en **Administración de Sistemas Informáticos y Redes (ASIR)** e **Inteligencia Artificial**. Combina una formación técnica rigurosa (sistemas, redes, bases de datos y herramientas de IA) con gran experiencia en trato humano, comunicación cara al público y organización administrativa.`;
     }
 
     // 9. Cara al público / Hostelería
-    if (q.includes('cara al público') || q.includes('publico') || q.includes('cliente') || q.includes('comunicaci')) {
+    if (q.includes('cara al publico') || q.includes('publico') || q.includes('cliente') || q.includes('comunicaci')) {
       return `🤝 **Experiencia Cara al Público**:\n\nSheyla cuenta con experiencia directa de trato con clientes y personas adquirida tanto en su puesto de **Administrativa en Instalaciones** (coordinando con clientes y operarios), como en las cafeterías **Elegance** y **Masa Madre** (barra, sala y atención rápida) y en el cuidado infantil de 2022 a 2024.`;
     }
 
