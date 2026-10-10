@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { PERSONAL_INFO } from '../data/portfolioData';
 
 interface PhotoContextType {
   photoUrl: string;
@@ -12,7 +13,7 @@ export const PhotoProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const saved = localStorage.getItem('sheyla_profile_photo');
       if (saved) return saved;
     }
-    return 'assets/img/sheyla.jfif';
+    return PERSONAL_INFO.profileImage;
   });
 
   return (

@@ -76,13 +76,6 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onOpenCvModal, onNavigate })
                 <span>Ver y Descargar CV</span>
               </button>
 
-              <button
-                onClick={() => onNavigate('workspace')}
-                className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-xl shadow-xs transition-all"
-              >
-                <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <span>Gmail & Docs</span>
-              </button>
             </div>
           </div>
 

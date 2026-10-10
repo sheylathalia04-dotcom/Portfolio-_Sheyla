@@ -71,12 +71,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             >
               Contacto
             </button>
-            <button
-              onClick={() => onNavigate('workspace')}
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-blue-600 dark:text-blue-400"
-            >
-              Gmail & Docs
-            </button>
           </div>
 
           <button

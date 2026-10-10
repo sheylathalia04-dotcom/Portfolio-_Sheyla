@@ -36,7 +36,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'experiencia', label: 'Experiencia' },
     { id: 'formacion', label: 'Formación' },
     { id: 'contacto', label: 'Contacto' },
-    { id: 'workspace', label: 'Gmail & Docs' },
   ];
 
   const handleNavClick = (pageId: string) => {
@@ -54,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-6 h-18">
-          {/* Zone 1: Marca con imagen oficial sheyla.jfif */}
+          {/* Zone 1: Marca con la imagen de perfil */}
           <button
             onClick={() => handleNavClick('inicio')}
             className="text-left group flex items-center gap-3 transition-colors shrink-0"

@@ -13,7 +13,6 @@ const PAGE_ORDER = [
   { id: 'experiencia', title: 'Experiencia (2022-2026)' },
   { id: 'formacion', title: 'Formación (2021-2026)' },
   { id: 'contacto', title: 'Contacto' },
-  { id: 'workspace', title: 'Gmail & Docs' },
 ];
 
 export const PageNavigation: React.FC<PageNavigationProps> = ({ currentPage, onNavigate }) => {

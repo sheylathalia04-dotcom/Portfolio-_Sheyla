@@ -93,7 +93,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenCvModal }) => {
               <div className="relative aspect-square rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-xl">
                 {!imageError ? (
                   <img
-                    src="assets/img/perfil.jpg"
+                    src={PERSONAL_INFO.profileImage}
                     alt="Foto de perfil de Sheyla Thalía Gutiérrez Larquín"
                     className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
                     referrerPolicy="no-referrer"

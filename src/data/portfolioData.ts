@@ -41,8 +41,8 @@ export const PERSONAL_INFO = {
   email: 'sheylathalia04@gmail.com',
   phone: '+34 681-20-25-52',
   phoneClean: '+34681202552',
-  profileImage: 'assets/img/sheyla.jfif',
-  profileImageFallback: 'assets/img/sheyla.jpg',
+  profileImage: '/assets/img/sheyla.jfif',
+  profileImageFallback: '/assets/img/profile-placeholder.svg',
   aboutBio: `Técnica Superior en Administración de Sistemas Informáticos y Redes (ASIR) complementada con formación avanzada en Inteligencia Artificial y Ciberseguridad por la Cámara de Comercio de Toledo y Udemy. Cuento con experiencia práctica en empresas tecnológicas punteras como Unitel Sistemas de Telecomunicaciones, interviniendo en mantenimiento de hardware de taller, oficinas de proyectos, despliegues de instalaciones de telecomunicaciones y tareas administrativas técnicas.
 
 Mi perfil combina una sólida base técnica en infraestructuras de red, servidores y bases de datos con excelentes capacidades de comunicación, coordinación de equipos, resolución de problemas y atención directa al cliente forjada a lo largo de diversas etapas formativas y laborales. Me mantengo en continuo aprendizaje para aportar valor innovador, orden y eficiencia a cualquier organización.`,

@@ -17,6 +17,7 @@ export const ChatbotModal: React.FC = () => {
   const [hasUnreadAlert, setHasUnreadAlert] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const responseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const initialGreeting: Message = {
     id: 'msg-init',
@@ -39,6 +40,14 @@ export const ChatbotModal: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    return () => {
+      if (responseTimeoutRef.current) {
+        clearTimeout(responseTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const generateAnswer = (query: string): string => {
     const q = query.toLowerCase().trim();
 
@@ -53,7 +62,7 @@ export const ChatbotModal: React.FC = () => {
     }
 
     // 3. Inteligencia Artificial / IA
-    if (q.includes('inteligencia artificial') || q.includes(' ia') || q.includes('ia ') || q.includes('modelo') || q.includes('cámara de comercio')) {
+    if (q.includes('inteligencia artificial') || /(^|[^\p{L}\p{N}])ia($|[^\p{L}\p{N}])/u.test(q) || q.includes('modelo') || q.includes('cámara de comercio')) {
       return `🤖 **Formación y Competencias en Inteligencia Artificial**:\n\nSheyla ha cursado formación especializada en la **Cámara de Comercio de Toledo**:\n\n1. **Curso de Fundamentos Básicos de Inteligencia Artificial** (Agosto - Septiembre 2026):\n   • Modelos de IA, aprendizaje automático y herramientas generativas modernas.\n\n2. **Curso de Emprendimiento Inteligente con IA: Administración y Gestión** (Septiembre - Octubre 2026):\n   • Aplicación práctica de la IA a la administración, gestión documental, optimización de productividad y automatización de tareas de oficina.`;
     }
 
@@ -93,7 +102,7 @@ export const ChatbotModal: React.FC = () => {
 
   const handleSend = (textToSend?: string) => {
     const query = textToSend || inputText;
-    if (!query.trim()) return;
+    if (!query.trim() || isTyping) return;
 
     const userMessage: Message = {
       id: `usr-${Date.now()}`,
@@ -106,7 +115,7 @@ export const ChatbotModal: React.FC = () => {
     setInputText('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    responseTimeoutRef.current = setTimeout(() => {
       const botResponseText = generateAnswer(query);
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
@@ -120,7 +129,12 @@ export const ChatbotModal: React.FC = () => {
   };
 
   const resetChat = () => {
+    if (responseTimeoutRef.current) {
+      clearTimeout(responseTimeoutRef.current);
+      responseTimeoutRef.current = null;
+    }
     setMessages([initialGreeting]);
+    setIsTyping(false);
   };
 
   return (
@@ -175,7 +189,7 @@ export const ChatbotModal: React.FC = () => {
 
       {/* Ventana Modal del Chatbot */}
       {isOpen && (
-        <div className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[440px] sm:max-h-[640px] z-50 flex flex-col bg-white dark:bg-slate-900 sm:rounded-3xl shadow-2xl border-2 border-blue-500/40 dark:border-blue-400/30 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
+        <div role="dialog" aria-modal="true" aria-label="Robot asistente de Sheyla" className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[440px] sm:max-h-[640px] z-50 flex flex-col bg-white dark:bg-slate-900 sm:rounded-3xl shadow-2xl border-2 border-blue-500/40 dark:border-blue-400/30 overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
           {/* Cabecera del Robot */}
           <div className="p-4 bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-950 text-white flex items-center justify-between shadow-md border-b border-blue-500/30">
             <div className="flex items-center gap-3">
@@ -234,7 +248,19 @@ export const ChatbotModal: React.FC = () => {
                       : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-700/80 rounded-tl-none whitespace-pre-line'
                   }`}
                 >
-                  <p className="leading-relaxed">{msg.text}</p>
+                  <p className="leading-relaxed">
+                    {msg.text
+                      .split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g)
+                      .map((part, index) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                          return <strong key={index}>{part.slice(2, -2)}</strong>;
+                        }
+                        if (part.startsWith('*') && part.endsWith('*')) {
+                          return <em key={index}>{part.slice(1, -1)}</em>;
+                        }
+                        return part;
+                      })}
+                  </p>
 
                   {/* Preguntas sugeridas */}
                   {msg.quickReplies && (
@@ -291,11 +317,12 @@ export const ChatbotModal: React.FC = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Pregúntame sobre los estudios o experiencia de Sheyla..."
+                disabled={isTyping}
                 className="flex-1 px-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-2 focus:outline-blue-600"
               />
               <button
                 type="submit"
-                disabled={!inputText.trim()}
+                disabled={!inputText.trim() || isTyping}
                 className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white transition-colors"
                 aria-label="Enviar pregunta al robot"
               >

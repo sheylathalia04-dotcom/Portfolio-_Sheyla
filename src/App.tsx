@@ -15,10 +15,9 @@ import { Footer } from './components/Footer';
 import { PageNavigation } from './components/PageNavigation';
 import { CvModal } from './components/CvModal';
 import { ChatbotModal } from './components/ChatbotModal';
-import { Workspace } from './components/Workspace';
 import { PhotoProvider } from './context/PhotoContext';
 
-const VALID_PAGES = ['inicio', 'sobre-mi', 'habilidades', 'experiencia', 'formacion', 'contacto', 'workspace'];
+const VALID_PAGES = ['inicio', 'sobre-mi', 'habilidades', 'experiencia', 'formacion', 'contacto'];
 
 export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -104,10 +103,6 @@ export default function App() {
           {currentPage === 'formacion' && <Education />}
 
           {currentPage === 'contacto' && <Contact />}
-
-          {currentPage === 'workspace' && (
-            <Workspace onNavigateHome={() => navigateToPage('inicio')} />
-          )}
 
           <PageNavigation
             currentPage={currentPage}

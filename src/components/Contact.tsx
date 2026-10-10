@@ -13,7 +13,8 @@ export const Contact: React.FC = () => {
     mensaje: '',
   });
 
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleCopy = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);
@@ -26,17 +27,55 @@ export const Contact: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formData.nombre || !formData.email || !formData.mensaje) return;
+    if (submitStatus === 'sending') return;
 
-    const subject = encodeURIComponent(formData.asunto || `Contacto de ${formData.nombre}`);
-    const body = encodeURIComponent(
-      `Hola Sheyla,\n\nMi nombre es: ${formData.nombre} (${formData.email})\n\nMensaje:\n${formData.mensaje}\n\nEnviado desde el Portfolio.`
-    );
-    
-    setFormSubmitted(true);
-    window.location.href = `mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`;
+    setSubmitStatus('sending');
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${PERSONAL_INFO.email}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.nombre,
+          email: formData.email,
+          _subject: formData.asunto || `Contacto desde el portfolio: ${formData.nombre}`,
+          _captcha: 'false',
+          _honey: new FormData(e.currentTarget).get('_honey') || '',
+          message: formData.mensaje,
+        }),
+      });
+
+      const result: unknown = await response.json();
+      const resultMessage =
+        typeof result === 'object' && result !== null && 'message' in result && typeof result.message === 'string'
+          ? result.message
+          : null;
+      const succeeded =
+        typeof result === 'object' &&
+        result !== null &&
+        'success' in result &&
+        (result.success === true || result.success === 'true');
+
+      if (!response.ok || !succeeded) {
+        throw new Error(resultMessage || 'El servicio de correo no pudo aceptar el mensaje.');
+      }
+
+      setSubmitStatus('success');
+      setFormData({ nombre: '', email: '', asunto: '', mensaje: '' });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'No se pudo enviar el mensaje. Inténtalo de nuevo o escríbeme directamente.';
+      setSubmitStatus('error');
+      setSubmitError(message);
+    }
   };
 
   return (
@@ -172,24 +211,26 @@ export const Contact: React.FC = () => {
                 Envíame un mensaje directo
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Completa el formulario y se generará una propuesta directa hacia mi correo.
+                Envíame un mensaje desde aquí, sin abrir tu aplicación de correo y sin crear una cuenta.
               </p>
 
-              {formSubmitted ? (
+              {submitStatus === 'success' ? (
                 <div className="p-6 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center mx-auto">
                     <Check className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    ¡Gracias por tu mensaje, {formData.nombre}!
+                    ¡Mensaje enviado correctamente!
                   </h3>
                   <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-                    Si no se abrió automáticamente tu gestor de correo, puedes escribir directamente a{' '}
-                    <strong className="text-blue-600 dark:text-blue-400">{PERSONAL_INFO.email}</strong>.
+                    Gracias por ponerte en contacto conmigo. También puedes escribirme a{' '}
+                    <a className="font-semibold text-blue-600 dark:text-blue-400" href={`mailto:${PERSONAL_INFO.email}`}>
+                      {PERSONAL_INFO.email}
+                    </a>.
                   </p>
                   <button
                     onClick={() => {
-                      setFormSubmitted(false);
+                      setSubmitStatus('idle');
                       setFormData({ nombre: '', email: '', asunto: '', mensaje: '' });
                     }}
                     className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
@@ -199,6 +240,10 @@ export const Contact: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="contact-website">Deja este campo vacío</label>
+                    <input id="contact-website" name="_honey" tabIndex={-1} autoComplete="off" />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -206,6 +251,7 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        name="nombre"
                         required
                         value={formData.nombre}
                         onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
@@ -220,6 +266,7 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="email"
+                        name="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -235,6 +282,7 @@ export const Contact: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      name="asunto"
                       value={formData.asunto}
                       onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
                       placeholder="Ej: Oportunidad laboral / Administrador de Sistemas"
@@ -248,6 +296,7 @@ export const Contact: React.FC = () => {
                     </label>
                     <textarea
                       required
+                      name="mensaje"
                       rows={4}
                       value={formData.mensaje}
                       onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
@@ -256,12 +305,29 @@ export const Contact: React.FC = () => {
                     />
                   </div>
 
+                  <label className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
+                    <input type="checkbox" required className="mt-0.5 accent-blue-600" />
+                    <span>
+                      Acepto que mis datos se envíen a FormSubmit para entregarle este mensaje a Sheyla. El portfolio no guarda los datos en una base de datos.
+                    </span>
+                  </label>
+
+                  {submitStatus === 'error' && submitError && (
+                    <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">
+                      No se pudo enviar el mensaje: {submitError} También puedes escribir a{' '}
+                      <a className="font-semibold underline" href={`mailto:${PERSONAL_INFO.email}`}>
+                        {PERSONAL_INFO.email}
+                      </a>.
+                    </p>
+                  )}
+
                   <button
                     type="submit"
+                    disabled={submitStatus === 'sending'}
                     className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Enviar Mensaje a Sheyla</span>
+                    <span>{submitStatus === 'sending' ? 'Enviando mensaje...' : 'Enviar Mensaje a Sheyla'}</span>
                   </button>
                 </form>
               )}
